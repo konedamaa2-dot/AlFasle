@@ -78,8 +78,11 @@
       <span>Base Supabase Connectée (PostgreSQL)</span>
     </div>
 
-    <!-- Right: Role Switcher & Profile -->
-    <div class="flex items-center gap-4">
+      <a href="/login" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/30 text-xs font-bold transition-all shadow-sm">
+        <i data-lucide="log-in" class="w-3.5 h-3.5"></i>
+        <span>Se connecter</span>
+      </a>
+
       <div class="flex items-center gap-2 bg-slate-900/80 p-1 rounded-xl border border-slate-700 text-xs">
         <span class="text-slate-400 text-[11px] pl-2 font-medium">Rôle :</span>
         <button id="roleTeacherBtn" onclick="setRole('TEACHER')" class="px-2.5 py-1 rounded-lg font-semibold transition-all bg-indigo-600 text-white shadow">

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — ALFASLE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b1120;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.2),rgba(255,255,255,0))]">
+
+  <!-- TOP HEADER -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+        <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
+      </div>
+      <div>
+        <span class="font-black text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-indigo-200">
+          ALFASLE
+        </span>
+        <span class="text-[10px] ml-2 font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+          LMS Pro
+        </span>
+      </div>
+    </a>
+
+    <a href="/" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-lg shadow-indigo-600/30 transition-all">
+      <i data-lucide="arrow-left" class="w-4 h-4"></i>
+      ← Retour à l'accueil
+    </a>
+  </header>
+
+  <!-- MAIN LOGIN CARD CONTAINER -->
+  <main class="flex-1 flex items-center justify-center p-4 sm:p-6">
+    <div class="w-full max-w-4xl glass-card rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 md:grid-cols-12 min-h-[560px]">
+
+      <!-- LEFT COLUMN: DYNAMIC GRADIENT BANNER (5 cols) -->
+      <div id="leftBanner" class="md:col-span-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 p-8 flex flex-col justify-between text-white relative overflow-hidden transition-all duration-500">
+        <!-- Background decorative circles -->
+        <div class="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+        <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-purple-500/20 rounded-full blur-2xl"></div>
+
+        <div class="relative z-10 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold">
+            <span id="bannerBadgeIcon">👑</span>
+            <span id="bannerBadgeText">Portail Direction & Administration</span>
+          </div>
+
+          <div class="space-y-3">
+            <h2 id="bannerTitle" class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
+              Direction & Administration !
+            </h2>
+            <p id="bannerDesc" class="text-xs sm:text-sm text-indigo-100/90 leading-relaxed">
+              Pilotez l'ensemble des activités, inscriptions et paramètres de votre établissement.
+            </p>
+          </div>
+        </div>
+
+        <div class="relative z-10 pt-6 border-t border-white/15 space-y-2">
+          <div class="flex items-center gap-2 text-xs text-indigo-200">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-300"></i>
+            <span>Connexion chiffrée SSL / TLS 256-bit</span>
+          </div>
+          <p class="text-[11px] text-indigo-200/70">Année Académique 2026-2027</p>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: LOGIN FORM (7 cols) -->
+      <div class="md:col-span-7 p-6 sm:p-10 flex flex-col justify-between bg-slate-900/90">
+        <div class="space-y-6">
+
+          <!-- Header -->
+          <div>
+            <h3 class="text-2xl font-black text-white tracking-tight">Se connecter</h3>
+            <p id="subTitleRole" class="text-xs text-indigo-400 mt-0.5">Connexion en tant qu'administration</p>
+          </div>
+
+          <!-- 4 ROLE SELECTOR BUTTONS -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <!-- Role 1: Admin -->
+            <button type="button" onclick="selectRole('ADMIN')" id="btn-role-ADMIN" class="p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all bg-indigo-600/20 border-indigo-500 text-white shadow-md shadow-indigo-600/10">
+              <span class="text-xl">👑</span>
+              <span class="text-[11px] font-bold">Admin</span>
+            </button>
+
+            <!-- Role 2: Teacher -->
+            <button type="button" onclick="selectRole('TEACHER')" id="btn-role-TEACHER" class="p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800">
+              <span class="text-xl">👨‍🏫</span>
+              <span class="text-[11px] font-bold">Enseignant</span>
+            </button>
+
+            <!-- Role 3: Student -->
+            <button type="button" onclick="selectRole('STUDENT')" id="btn-role-STUDENT" class="p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800">
+              <span class="text-xl">🎓</span>
+              <span class="text-[11px] font-bold">Élève</span>
+            </button>
+
+            <!-- Role 4: Parent -->
+            <button type="button" onclick="selectRole('PARENT')" id="btn-role-PARENT" class="p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800">
+              <span class="text-xl">👨‍👩‍👧</span>
+              <span class="text-[11px] font-bold">Parent</span>
+            </button>
+          </div>
+
+          <!-- Espace Title -->
+          <div class="pt-2 border-t border-slate-800">
+            <h4 id="espaceTitle" class="text-sm font-bold text-white">Espace Administration</h4>
+            <p id="espaceDesc" class="text-[11px] text-slate-400">Accès Direction, Secrétariat et Supervision</p>
+          </div>
+
+          <!-- FORM -->
+          <form onsubmit="handleLogin(event)" class="space-y-4 text-xs">
+            <div>
+              <label class="block font-semibold text-slate-300 mb-1.5">Identifiant / Login ou Email *</label>
+              <div class="relative">
+                <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                <input id="emailInput" type="text" required placeholder="nom.prenom@alfasle.edu" value="admin@alfasle.edu" class="w-full pl-10 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="font-semibold text-slate-300">Mot de passe *</label>
+                <a href="#" onclick="alert('Un lien de réinitialisation vous sera envoyé par email.')" class="text-[11px] text-indigo-400 hover:underline">Mot de passe oublié ?</a>
+              </div>
+              <div class="relative">
+                <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+                <input id="passwordInput" type="password" required placeholder="••••••••••••" value="password123" class="w-full pl-10 pr-10 py-2.5 bg-slate-950 border border-slate-700 rounded-xl text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500" />
+                <button type="button" onclick="togglePassword()" class="absolute right-3.5 top-2.5 text-slate-400 hover:text-white">
+                  <i id="eyeIcon" data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2 pt-1">
+              <input type="checkbox" id="rememberMe" checked class="rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-indigo-500" />
+              <label for="rememberMe" class="text-slate-400 text-[11px]">Se souvenir de moi sur cet appareil</label>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5 mt-2">
+              <i data-lucide="log-in" class="w-4 h-4"></i>
+              Se connecter à mon Espace
+            </button>
+          </form>
+
+        </div>
+
+        <div class="pt-4 mt-6 border-t border-slate-800/80 text-center text-xs text-slate-400">
+          Pas encore inscrit ? <a href="/" class="text-indigo-400 font-bold hover:underline">Déposer une préinscription</a>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-900">
+    © 2026-2027 ALFASLE LMS — Tous droits réservés.
+  </footer>
+
+  <script>
+    lucide.createIcons();
+
+    const roleData = {
+      ADMIN: {
+        badgeIcon: '👑',
+        badgeText: 'Portail Direction & Administration',
+        title: 'Direction & Administration !',
+        desc: 'Pilotez l\'ensemble des activités, inscriptions et paramètres de votre établissement.',
+        subTitle: 'Connexion en tant qu\'administration',
+        espaceTitle: 'Espace Administration',
+        espaceDesc: 'Accès Direction, Secrétariat et Supervision',
+        defaultEmail: 'admin@alfasle.edu',
+        bannerGradient: 'from-indigo-600 via-indigo-700 to-purple-800'
+      },
+      TEACHER: {
+        badgeIcon: '👨‍🏫',
+        badgeText: 'Portail Enseignants & Formateurs',
+        title: 'Espace Enseignant & Pédagogie !',
+        desc: 'Gérez vos classes, publiez vos cours et vidéos, et notez vos devoirs en direct.',
+        subTitle: 'Connexion en tant qu\'enseignant',
+        espaceTitle: 'Espace Enseignant / Formateur',
+        espaceDesc: 'Publication de cours, devoirs et corrections',
+        defaultEmail: 'sarah.mansouri@alfasle.edu',
+        bannerGradient: 'from-blue-600 via-indigo-700 to-indigo-900'
+      },
+      STUDENT: {
+        badgeIcon: '🎓',
+        badgeText: 'Portail Élèves & Étudiants',
+        title: 'Espace Élève / Étudiant !',
+        desc: 'Accédez à vos leçons, soumettez vos devoirs et consultez vos notes et corrigés.',
+        subTitle: 'Connexion en tant qu\'élève / étudiant',
+        espaceTitle: 'Espace Étudiant',
+        espaceDesc: 'Accès aux cours multimédias et rendus de devoirs',
+        defaultEmail: 'amine.benali@student.alfasle.edu',
+        bannerGradient: 'from-emerald-600 via-teal-700 to-indigo-900'
+      },
+      PARENT: {
+        badgeIcon: '👨‍👩‍👧',
+        badgeText: 'Portail Parents d\'Élèves',
+        title: 'Espace Parent d\'Élève !',
+        desc: 'Suivez la progression, les devoirs et les résultats scolaires de vos enfants.',
+        subTitle: 'Connexion en tant que parent d\'élève',
+        espaceTitle: 'Espace Famille & Tuteur',
+        espaceDesc: 'Suivi de l\'assiduité et bulletins de notes',
+        defaultEmail: 'parent@alfasle.edu',
+        bannerGradient: 'from-amber-600 via-orange-700 to-indigo-900'
+      }
+    };
+
+    let currentRole = 'ADMIN';
+
+    function selectRole(role) {
+      currentRole = role;
+      const data = roleData[role];
+
+      // Update active button styles
+      ['ADMIN', 'TEACHER', 'STUDENT', 'PARENT'].forEach(r => {
+        const btn = document.getElementById('btn-role-' + r);
+        if (r === role) {
+          btn.className = 'p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all bg-indigo-600 text-white shadow-md shadow-indigo-600/20 border-indigo-400';
+        } else {
+          btn.className = 'p-2.5 rounded-xl flex flex-col items-center justify-center gap-1.5 border transition-all bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800';
+        }
+      });
+
+      // Update banner info
+      document.getElementById('bannerBadgeIcon').innerText = data.badgeIcon;
+      document.getElementById('bannerBadgeText').innerText = data.badgeText;
+      document.getElementById('bannerTitle').innerText = data.title;
+      document.getElementById('bannerDesc').innerText = data.desc;
+      document.getElementById('subTitleRole').innerText = data.subTitle;
+      document.getElementById('espaceTitle').innerText = data.espaceTitle;
+      document.getElementById('espaceDesc').innerText = data.espaceDesc;
+      document.getElementById('emailInput').value = data.defaultEmail;
+
+      const leftBanner = document.getElementById('leftBanner');
+      leftBanner.className = `md:col-span-5 bg-gradient-to-br ${data.bannerGradient} p-8 flex flex-col justify-between text-white relative overflow-hidden transition-all duration-500`;
+
+      lucide.createIcons();
+    }
+
+    function togglePassword() {
+      const input = document.getElementById('passwordInput');
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      const eyeIcon = document.getElementById('eyeIcon');
+      eyeIcon.setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+      lucide.createIcons();
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value;
+      const btn = document.getElementById('submitBtn');
+      btn.innerHTML = `<span class="animate-spin">⏳</span> Connexion en cours...`;
+
+      setTimeout(() => {
+        alert(`Connexion réussie en tant que ${currentRole} (${email}) !`);
+        window.location.href = '/';
+      }, 800);
+    }
+  </script>
+</body>
+</html>
