@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALFASLE — Plateforme de Gestion de Classes, Cours & Devoirs</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.5);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: all 0.2s ease;
+    }
+    .glass-card:hover {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- NAVBAR -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-800 px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+        <i data-lucide="graduation-cap" class="w-6 h-6 text-white"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-100 to-indigo-200">
+            ALFASLE
+          </span>
+          <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 uppercase tracking-wider">
+            LMS Pro
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400 hidden sm:block">Plateforme de Gestion de Classes & Cours</p>
+      </div>
+    </div>
+
+    <!-- Center Status -->
+    <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <span>Base Supabase Connectée (PostgreSQL)</span>
+    </div>
+
+    <!-- Right: Role Switcher & Profile -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-slate-900/80 p-1 rounded-xl border border-slate-700 text-xs">
+        <span class="text-slate-400 text-[11px] pl-2 font-medium">Rôle :</span>
+        <button id="roleTeacherBtn" onclick="setRole('TEACHER')" class="px-2.5 py-1 rounded-lg font-semibold transition-all bg-indigo-600 text-white shadow">
+          👨‍🏫 Enseignant
+        </button>
+        <button id="roleStudentBtn" onclick="setRole('STUDENT')" class="px-2.5 py-1 rounded-lg font-semibold transition-all text-slate-400 hover:text-white">
+          🎓 Étudiant
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2.5 pl-2 border-l border-slate-800">
+        <img id="userAvatar" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100" class="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-500/30" />
+        <div class="hidden lg:block text-left">
+          <p id="userName" class="text-xs font-semibold text-slate-200 leading-none">Prof. Sarah Mansouri</p>
+          <p id="userRoleTitle" class="text-[10px] text-indigo-400 leading-tight mt-0.5">Enseignant Formateur</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <div class="flex-1 flex max-w-[1600px] w-full mx-auto">
+    <!-- SIDEBAR -->
+    <aside class="w-64 shrink-0 glass-panel border-r border-slate-800 p-4 flex flex-col justify-between hidden md:flex min-h-[calc(100vh-65px)]">
+      <div class="space-y-6">
+        <div>
+          <p class="px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Menu Principal</p>
+          <nav class="space-y-1">
+            <button onclick="setTab('dashboard')" id="nav-dashboard" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-lg shadow-indigo-600/30">
+              <span class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="w-4 h-4"></i> Tableau de Bord</span>
+            </button>
+            <button onclick="setTab('classes')" id="nav-classes" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">
+              <span class="flex items-center gap-3"><i data-lucide="folder-kanban" class="w-4 h-4"></i> Mes Classes</span>
+            </button>
+            <button onclick="setTab('inscriptions')" id="nav-inscriptions" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">
+              <span class="flex items-center gap-3"><i data-lucide="user-check" class="w-4 h-4"></i> Préinscriptions</span>
+              <span id="pendingInscriptionsBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">2</span>
+            </button>
+            <button onclick="setTab('courses')" id="nav-courses" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">
+              <span class="flex items-center gap-3"><i data-lucide="video" class="w-4 h-4"></i> Cours & Vidéos</span>
+            </button>
+            <button onclick="setTab('assignments')" id="nav-assignments" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">
+              <span class="flex items-center gap-3"><i data-lucide="file-check-2" class="w-4 h-4"></i> Devoirs & Notes</span>
+              <span id="pendingGradingBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">1 à noter</span>
+            </button>
+            <button onclick="setTab('grades')" id="nav-grades" class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800">
+              <span class="flex items-center gap-3"><i data-lucide="award" class="w-4 h-4"></i> Relevé de Notes</span>
+            </button>
+          </nav>
+        </div>
+      </div>
+      <div class="pt-4 border-t border-slate-800 text-center text-[11px] text-slate-500">
+        ALFASLE SaaS v1.0.0
+      </div>
+    </aside>
+
+    <!-- CONTENT AREA -->
+    <main class="flex-1 p-6 sm:p-8 overflow-y-auto max-h-[calc(100vh-65px)]">
+
+      <!-- SECTION: DASHBOARD (TEACHER) -->
+      <div id="section-dashboard" class="space-y-8">
+        <!-- Banner -->
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-900/60 via-slate-900/80 to-purple-900/60 border border-indigo-500/20 p-6 sm:p-8 shadow-xl">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30">
+                ✨ Espace Enseignant & Gestion
+              </span>
+              <h1 id="bannerTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                Bonjour, Prof. Sarah Mansouri 👋
+              </h1>
+              <p class="text-sm text-slate-300 max-w-xl">
+                Créez vos classes, validez les préinscriptions en attente, publiez vos cours et vidéos, et notez les devoirs au même endroit.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button onclick="openModal('createClassModal')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i> Nouvelle Classe
+              </button>
+              <button onclick="setTab('courses')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold">
+                <i data-lucide="video" class="w-4 h-4 text-purple-400"></i> Publier un Cours
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 KPI Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="glass-card rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-slate-400">Classes Actives</p>
+              <p class="text-2xl font-bold text-white">3</p>
+              <p class="text-[11px] text-indigo-400">6 cours publiés</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+              <i data-lucide="folder-kanban" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div class="glass-card rounded-2xl p-5 border border-slate-800 flex items-center justify-between">
+            <div>
+              <p class="text-xs font-medium text-slate-400">Étudiants Inscrits</p>
+              <p class="text-2xl font-bold text-white">54</p>
+              <p class="text-[11px] text-emerald-400">Effectif total</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <i data-lucide="users" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div onclick="setTab('inscriptions')" class="glass-card rounded-2xl p-5 border border-slate-800 flex items-center justify-between cursor-pointer hover:border-amber-500/40">
+            <div>
+              <p class="text-xs font-medium text-slate-400">Demandes en Attente</p>
+              <p id="kpiPending" class="text-2xl font-bold text-amber-300">2</p>
+              <p class="text-[11px] text-amber-400/80">Candidatures à valider</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <i data-lucide="user-check" class="w-6 h-6"></i>
+            </div>
+          </div>
+          <div onclick="setTab('assignments')" class="glass-card rounded-2xl p-5 border border-slate-800 flex items-center justify-between cursor-pointer hover:border-purple-500/40">
+            <div>
+              <p class="text-xs font-medium text-slate-400">Devoirs à Corriger</p>
+              <p id="kpiGrading" class="text-2xl font-bold text-purple-300">1</p>
+              <p class="text-[11px] text-purple-400/80">Copies en attente</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <i data-lucide="file-check-2" class="w-6 h-6"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 Grid Sections: Pre-registrations & Assignments -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="user-check" class="w-4 h-4 text-amber-400"></i> Préinscriptions Récentes
+              </h3>
+              <button onclick="setTab('inscriptions')" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Voir tout →</button>
+            </div>
+            <div id="dashboardInscriptionsList" class="space-y-3">
+              <!-- Inscription 1 -->
+              <div id="ins-1" class="p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" class="w-9 h-9 rounded-full object-cover border border-slate-700" />
+                  <div>
+                    <p class="text-xs font-bold text-white">Yasmine Khelifi</p>
+                    <p class="text-[11px] text-indigo-300">Développement Web Next.js 15</p>
+                    <p class="text-[10px] text-slate-400 italic">« Reconversion dev frontend »</p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="approveIns('ins-1', 'Yasmine Khelifi')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Valider</button>
+                  <button onclick="rejectIns('ins-1')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-rose-300 text-xs">Refuser</button>
+                </div>
+              </div>
+              <!-- Inscription 2 -->
+              <div id="ins-2" class="p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100" class="w-9 h-9 rounded-full object-cover border border-slate-700" />
+                  <div>
+                    <p class="text-xs font-bold text-white">Karim Ziani</p>
+                    <p class="text-[11px] text-indigo-300">Développement Web Next.js 15</p>
+                    <p class="text-[10px] text-slate-400 italic">« Perfectionnement TypeScript »</p>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="approveIns('ins-2', 'Karim Ziani')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold">Valider</button>
+                  <button onclick="rejectIns('ins-2')" class="px-2.5 py-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-rose-300 text-xs">Refuser</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Submissions to Grade -->
+          <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="file-check-2" class="w-4 h-4 text-purple-400"></i> Devoirs à Corriger
+              </h3>
+              <button onclick="setTab('assignments')" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Voir tout →</button>
+            </div>
+            <div class="space-y-3">
+              <div id="sub-card-1" class="p-3.5 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-3">
+                <div>
+                  <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-bold">À Corriger</span>
+                  <p class="text-xs font-bold text-white mt-1">TP 1 : Catalogue de cours Next.js</p>
+                  <p class="text-[11px] text-slate-400">Rendu par <span class="text-indigo-300 font-semibold">Yasmine Khelifi</span></p>
+                </div>
+                <button onclick="openGradingModal('Yasmine Khelifi', 'TP 1 : Catalogue de cours Next.js')" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow">
+                  Noter la Copie
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: CLASSES -->
+      <div id="section-classes" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-white">Gestion des Classes & Formations</h2>
+            <p class="text-xs text-slate-400">Créez et paramétrez vos promotions</p>
+          </div>
+          <button onclick="openModal('createClassModal')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold shadow">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Créer une Classe
+          </button>
+        </div>
+
+        <div id="classesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+            <img src="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800" class="h-36 w-full object-cover" />
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">Intermédiaire</span>
+                <span class="text-[11px] text-emerald-400 font-semibold">Sur sélection</span>
+              </div>
+              <h3 class="text-sm font-bold text-white">Développement Web Moderne Next.js 15 & TypeScript</h3>
+              <p class="text-xs text-slate-400">Apprenez à concevoir des applications web complètes avec App Router et Supabase.</p>
+              <div class="pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+                <span>Inscrits : <b class="text-white">24/35</b></span>
+                <button onclick="setTab('courses')" class="text-indigo-400 font-bold hover:underline">Voir les cours →</button>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+            <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800" class="h-36 w-full object-cover" />
+            <div class="p-5 space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">Avancé</span>
+                <span class="text-[11px] text-indigo-400 font-semibold">Accès libre</span>
+              </div>
+              <h3 class="text-sm font-bold text-white">Algorithmique Avancée & Structures de Données</h3>
+              <p class="text-xs text-slate-400">Maîtrisez les graphes, arbres binaires et programmation dynamique.</p>
+              <div class="pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+                <span>Inscrits : <b class="text-white">18/25</b></span>
+                <button onclick="setTab('courses')" class="text-indigo-400 font-bold hover:underline">Voir les cours →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: COURSES & VIDEO PLAYER -->
+      <div id="section-courses" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-white">Cours & Vidéos Multimédias</h2>
+            <p class="text-xs text-slate-400">Visionnez les sessions vidéo et téléchargez les supports</p>
+          </div>
+          <button onclick="alert('Module de publication de nouveau cours ouvert !')" class="px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-bold shadow">
+            + Ajouter une Vidéo / Leçon
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 glass-panel rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+            <!-- Video Player -->
+            <div class="aspect-video bg-black flex items-center justify-center relative">
+              <video controls class="w-full h-full object-contain" src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" poster="https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=800"></video>
+            </div>
+            <div class="p-6 space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 text-[10px] font-bold">Module 1 : Architecture</span>
+                <span class="text-xs text-slate-400">⏱️ 28 minutes</span>
+              </div>
+              <h3 class="text-lg font-bold text-white">1. Introduction au App Router et aux Server Components (RSC)</h3>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Dans cette leçon, nous explorons comment Next.js sépare le rendu serveur du rendu client pour optimiser les performances et la sécurité.
+              </p>
+            </div>
+          </div>
+
+          <!-- Playlist -->
+          <div class="lg:col-span-4 glass-panel rounded-2xl p-5 border border-slate-800 space-y-3">
+            <h4 class="text-xs font-bold text-white uppercase tracking-wider">Plan du Cours</h4>
+            <div class="space-y-2">
+              <div class="p-3 rounded-xl bg-indigo-600/20 border border-indigo-500 text-white text-xs font-bold">
+                1. Introduction au App Router (RSC) • 28 min
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs">
+                2. Routage dynamique et Layouts • 34 min
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 text-xs">
+                3. Server Actions & Connexion Supabase • 40 min
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: ASSIGNMENTS -->
+      <div id="section-assignments" class="hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-white">Devoirs & Évaluations</h2>
+            <p class="text-xs text-slate-400">Consultez les sujets, déposez vos travaux et notez les copies</p>
+          </div>
+          <button onclick="alert('Création de devoir')" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow">
+            + Donner un Devoir
+          </button>
+        </div>
+
+        <div class="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">Limite : 30 Septembre 2026</span>
+              <h3 class="text-base font-bold text-white mt-1">TP 1 : Catalogue de cours interactif Next.js 15</h3>
+              <p class="text-xs text-slate-400 mt-0.5">Barème : /20 points</p>
+            </div>
+            <button onclick="openGradingModal('Amine Benali', 'TP 1 : Catalogue de cours interactif Next.js 15')" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-bold">
+              Corriger une Copie
+            </button>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-900 text-xs text-slate-300">
+            Consigne : Créez une application Next.js 15 avec TypeScript et Tailwind CSS, intégrant un Server Component pour le fetch de données et un filtre interactif.
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: GRADES -->
+      <div id="section-grades" class="hidden space-y-6">
+        <h2 class="text-xl font-bold text-white">Relevé de Notes & Moyennes</h2>
+        <div class="glass-panel rounded-2xl border border-slate-800 overflow-hidden">
+          <table class="w-full text-left text-xs text-slate-300">
+            <thead class="bg-slate-900 text-slate-400 uppercase text-[10px] border-b border-slate-800">
+              <tr>
+                <th class="p-4">Étudiant</th>
+                <th class="p-4">Devoir</th>
+                <th class="p-4">Note</th>
+                <th class="p-4">Appréciation</th>
+              </tr>
+            </thead>
+            <tbody id="gradesTableBody" class="divide-y divide-slate-800">
+              <tr>
+                <td class="p-4 font-bold text-white">Amine Benali</td>
+                <td class="p-4 text-indigo-300">TP 1 : Catalogue de cours</td>
+                <td class="p-4"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">18.5 / 20</span></td>
+                <td class="p-4 text-slate-300">Excellent travail, architecture très propre !</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL: CREATE CLASS -->
+  <div id="createClassModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="w-full max-w-lg glass-panel rounded-2xl border border-slate-700 p-6 space-y-4">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-white">Créer une Nouvelle Classe</h3>
+        <button onclick="closeModal('createClassModal')" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form onsubmit="handleCreateClass(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Nom de la classe</label>
+          <input id="newClassTitle" required placeholder="ex: Intelligence Artificielle & Prompt Engineering" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Description</label>
+          <textarea id="newClassDesc" rows="2" placeholder="Objectifs et compétences..." class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Niveau</label>
+            <select class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">
+              <option>Débutant</option>
+              <option>Intermédiaire</option>
+              <option>Avancé</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Capacité (places)</label>
+            <input type="number" value="30" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white" />
+          </div>
+        </div>
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('createClassModal')" class="px-4 py-2 bg-slate-800 rounded-xl text-slate-300">Annuler</button>
+          <button type="submit" class="px-5 py-2 bg-indigo-600 rounded-xl font-bold text-white">Créer la Classe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: GRADING -->
+  <div id="gradingModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+    <div class="w-full max-w-lg glass-panel rounded-2xl border border-slate-700 p-6 space-y-4">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-white">Correction & Attribution de Note</h3>
+        <button onclick="closeModal('gradingModal')" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <form onsubmit="handleGradeSubmit(event)" class="space-y-4 text-xs">
+        <div class="p-3 bg-slate-900 rounded-xl">
+          <p id="gradeStudentName" class="font-bold text-white">Étudiant : Yasmine Khelifi</p>
+          <p id="gradeAssignmentName" class="text-indigo-300">TP 1 : Catalogue de cours</p>
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Note (sur 20)</label>
+          <input id="gradeScoreInput" type="number" step="0.5" value="19" class="w-32 p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-indigo-300 font-bold text-center text-base" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Appréciation & Feedback</label>
+          <textarea id="gradeFeedbackInput" rows="3" class="w-full p-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white">Superbe travail, code très propre et bien commenté !</textarea>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="closeModal('gradingModal')" class="px-4 py-2 bg-slate-800 rounded-xl text-slate-300">Annuler</button>
+          <button type="submit" class="px-5 py-2 bg-indigo-600 rounded-xl font-bold text-white">Valider la Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    function setTab(tabName) {
+      const sections = ['dashboard', 'classes', 'courses', 'assignments', 'grades'];
+      sections.forEach(s => {
+        const el = document.getElementById('section-' + s);
+        if (el) el.classList.toggle('hidden', s !== tabName);
+        const nav = document.getElementById('nav-' + s);
+        if (nav) {
+          if (s === tabName) {
+            nav.className = 'w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-lg shadow-indigo-600/30';
+          } else {
+            nav.className = 'w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-800';
+          }
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function setRole(role) {
+      const isTeacher = role === 'TEACHER';
+      document.getElementById('roleTeacherBtn').className = isTeacher ? 'px-2.5 py-1 rounded-lg font-semibold transition-all bg-indigo-600 text-white shadow' : 'px-2.5 py-1 rounded-lg font-semibold transition-all text-slate-400 hover:text-white';
+      document.getElementById('roleStudentBtn').className = !isTeacher ? 'px-2.5 py-1 rounded-lg font-semibold transition-all bg-emerald-600 text-white shadow' : 'px-2.5 py-1 rounded-lg font-semibold transition-all text-slate-400 hover:text-white';
+
+      document.getElementById('userAvatar').src = isTeacher ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100' : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100';
+      document.getElementById('userName').innerText = isTeacher ? 'Prof. Sarah Mansouri' : 'Amine Benali';
+      document.getElementById('userRoleTitle').innerText = isTeacher ? 'Enseignant Formateur' : 'Étudiant Développeur';
+      document.getElementById('bannerTitle').innerText = isTeacher ? 'Bonjour, Prof. Sarah Mansouri 👋' : 'Bienvenue, Amine Benali 🎓';
+    }
+
+    function approveIns(id, name) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.innerHTML = `<div class="p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2">✅ Candidature de ${name} validée avec succès !</div>`;
+        setTimeout(() => el.remove(), 2500);
+      }
+    }
+
+    function rejectIns(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+    function openGradingModal(student, assignment) {
+      document.getElementById('gradeStudentName').innerText = 'Étudiant : ' + student;
+      document.getElementById('gradeAssignmentName').innerText = assignment;
+      openModal('gradingModal');
+    }
+
+    function handleGradeSubmit(e) {
+      e.preventDefault();
+      const score = document.getElementById('gradeScoreInput').value;
+      const feedback = document.getElementById('gradeFeedbackInput').value;
+      const student = document.getElementById('gradeStudentName').innerText.replace('Étudiant : ', '');
+
+      const tbody = document.getElementById('gradesTableBody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="p-4 font-bold text-white">${student}</td>
+        <td class="p-4 text-indigo-300">TP 1 : Catalogue de cours</td>
+        <td class="p-4"><span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">${score} / 20</span></td>
+        <td class="p-4 text-slate-300">${feedback}</td>
+      `;
+      tbody.prepend(tr);
+
+      const card = document.getElementById('sub-card-1');
+      if (card) {
+        card.innerHTML = `<div class="p-3 bg-emerald-950/40 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs font-semibold">✅ Note de ${score}/20 enregistrée pour ${student} !</div>`;
+      }
+
+      closeModal('gradingModal');
+      alert(`Note de ${score}/20 enregistrée pour ${student} !`);
+    }
+
+    function handleCreateClass(e) {
+      e.preventDefault();
+      const title = document.getElementById('newClassTitle').value;
+      const desc = document.getElementById('newClassDesc').value;
+
+      const grid = document.getElementById('classesGrid');
+      const card = document.createElement('div');
+      card.className = 'glass-card rounded-2xl overflow-hidden border border-slate-800 animate-fadeIn';
+      card.innerHTML = `
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800" class="h-36 w-full object-cover" />
+        <div class="p-5 space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px] font-bold">Nouveau</span>
+            <span class="text-[11px] text-emerald-400 font-semibold">Sur sélection</span>
+          </div>
+          <h3 class="text-sm font-bold text-white">${title}</h3>
+          <p class="text-xs text-slate-400">${desc}</p>
+          <div class="pt-3 border-t border-slate-800 flex justify-between text-xs text-slate-400">
+            <span>Inscrits : <b class="text-white">0/30</b></span>
+            <button onclick="setTab('courses')" class="text-indigo-400 font-bold hover:underline">Voir les cours →</button>
+          </div>
+        </div>
+      `;
+      grid.prepend(card);
+      closeModal('createClassModal');
+      setTab('classes');
+      alert(`Classe « ${title} » créée avec succès !`);
+    }
+  </script>
+</body>
+</html>
